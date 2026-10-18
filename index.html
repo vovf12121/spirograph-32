@@ -1,0 +1,87 @@
+<!doctype html>
+<html lang="uk">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <title>Спірограф — варіант 32</title>
+  <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+  <header>
+    <div><h1>Спірограф</h1><p>Математичне моделювання</p></div>
+    <span>Варіант 32</span>
+  </header>
+  <main>
+    <aside>
+      <h2>Параметри</h2>
+      <label for="numA">A — радіус великого колеса</label>
+      <input id="numA" type="number" min="2" max="240" step="1" value="96" aria-describedby="error">
+      <label for="numB">B — радіус малого колеса</label>
+      <input id="numB" type="number" min="1" max="239" step="1" value="36" aria-describedby="error">
+      <label for="numD">D — відстань до олівця</label>
+      <input id="numD" type="number" min="0" step="any" value="28" aria-describedby="error">
+      <p class="condition">0 &lt; D &lt; B &lt; A</p>
+      <p id="error" role="alert" hidden></p>
+      <button id="play" class="primary">Побудувати</button>
+      <button id="reset">Новий дослід</button>
+      <button id="helpOpen">Як працює програма</button>
+
+      <h2 class="bounds-title">Координатне поле</h2>
+      <div class="bounds">
+        <label>x₁<input id="x1" type="number" step="any" value="-120"></label>
+        <label>x₂<input id="x2" type="number" step="any" value="120"></label>
+        <label>y₁<input id="y1" type="number" step="any" value="-120"></label>
+        <label>y₂<input id="y2" type="number" step="any" value="120"></label>
+      </div>
+      <button id="applyBounds">Застосувати межі</button>
+      <p class="note">A і B — цілі числа. Усі довжини задано в умовних одиницях.</p>
+    </aside>
+
+    <section class="results" aria-label="Креслення і результати">
+      <div class="plot-toolbar">
+        <div class="plot-buttons" role="group" aria-label="Переміщення області перегляду і масштаб">
+          <button data-pan="left" aria-label="Переглянути ліворуч" title="Переглянути ліворуч">←</button>
+          <button data-pan="right" aria-label="Переглянути праворуч" title="Переглянути праворуч">→</button>
+          <button data-pan="up" aria-label="Переглянути вгору" title="Переглянути вгору">↑</button>
+          <button data-pan="down" aria-label="Переглянути вниз" title="Переглянути вниз">↓</button>
+          <span></span>
+          <button id="zoomIn" aria-label="Збільшити масштаб">+</button>
+          <button id="zoomOut" aria-label="Зменшити масштаб">−</button>
+        </div>
+        <button id="fit">Показати все</button>
+      </div>
+      <div id="paper"><canvas id="board" aria-label="Координатне поле зі спірографом">Потрібен браузер із підтримкою Canvas.</canvas></div>
+      <div class="plot-caption"><p id="turns">Обертів до замикання: 3</p><span id="coordinates">x: —; y: —</span></div>
+      <p id="status" role="status" aria-live="polite">Зміни A, B або D — візерунок перебудується.</p>
+
+      <section class="comparison" aria-labelledby="compareHeading">
+        <div class="comparison-heading"><h2 id="compareHeading">Порівняння результатів</h2><div><button id="save">Зберегти для порівняння</button><button id="export" class="primary">Зберегти PNG</button></div></div>
+        <p id="compareHint">Збережи результат, потім зміни один параметр. Обидва візерунки буде видно на спільному полі.</p>
+        <div class="table-wrap"><table><caption class="sr-only">Параметри поточного та збереженого результатів</caption><thead><tr><th scope="col">Результат</th><th scope="col">A</th><th scope="col">B</th><th scope="col">D</th><th scope="col">Обертів</th></tr></thead><tbody><tr class="current"><th scope="row">Поточний</th><td id="currentA">96</td><td id="currentB">36</td><td id="currentD">28</td><td id="currentN">3</td></tr><tr id="savedRow" class="saved" hidden><th scope="row">Збережений</th><td id="savedA"></td><td id="savedB"></td><td id="savedD"></td><td id="savedN"></td></tr></tbody></table></div>
+      </section>
+    </section>
+  </main>
+  <footer>Спірограф / варіант 32 · Стрілки пересувають область перегляду, + і − змінюють масштаб.</footer>
+  <dialog id="help" aria-labelledby="helpHeading">
+    <div class="help-heading"><h2 id="helpHeading">Як працює програма</h2><button id="helpClose" autofocus>Закрити</button></div>
+    <p>В основі спірографа — геометрія кіл, тригонометрія та параметричні рівняння. Програма обчислює, де знаходиться олівець при кожному значенні параметра t, і з’єднує ці точки лінією.</p>
+    <h3>1. Що означають A, B та D</h3>
+    <ul><li><b>A</b> — радіус великого нерухомого колеса.</li><li><b>B</b> — радіус малого колеса всередині нього.</li><li><b>D</b> — відстань від центра малого колеса до олівця.</li></ul>
+    <p>Має виконуватися 0 &lt; D &lt; B &lt; A: мале колесо поміщається у великому, а олівець знаходиться всередині малого.</p>
+    <h3>2. Як знаходиться положення олівця</h3>
+    <p>Відстань між центрами кіл дорівнює A − B. Синус і косинус дають координати точок на колі. У програмі використано формулу з варіанта 32 вашого завдання:</p>
+    <div class="equations">φ = (A / B) · t<br>x = (A − B) · cos t + D · cos φ<br>y = (A − B) · sin t − D · sin φ</div>
+    <p>Перші доданки задають центр малого колеса. Другі — положення олівця відносно цього центра. Коли t змінюється, олівець рухається й залишає слід.</p>
+    <h3>3. Чому рисунок замикається</h3>
+    <p>Для цілих A і B число обертів центра до повернення олівця на початок дорівнює:</p>
+    <div class="equations">n = B / НСД(A, B)<br>0 ≤ t ≤ 2πn</div>
+    <p>НСД — найбільший спільний дільник. Наприклад, для A = 96 і B = 36 маємо НСД = 12, тому n = 36 / 12 = 3 оберти. Зміна D змінює форму, а число обертів залишається тим самим.</p>
+    <h3>4. Як працюють перегляд і порівняння</h3>
+    <p>Стрілки пересувають область перегляду: ← до менших x, → до більших x, ↑ до більших y, ↓ до менших y. + і − змінюють масштаб. Числа A, B та D при цьому залишаються тими самими.</p>
+    <p>При порівнянні синій рисунок зберігає попередні параметри, червоний показує поточні. Обидва будуються в одній системі координат. У PNG зберігаються повні криві та їхні параметри.</p>
+    <p class="help-note">Це пояснення математичної формули з умови. Її запис відрізняється від точної моделі кочення колеса без ковзання; тут використано саме формулу із завдання.</p>
+  </dialog>
+  <script src="model.js"></script>
+  <script src="app.js"></script>
+</body>
+</html>
